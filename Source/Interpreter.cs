@@ -33,7 +33,7 @@ namespace UnaRisc
 
             string[] lines = code.Split(new[] { '\r', '\n' });
 
-            // Parse the labels
+            // Parse the labels and remove the comments
             for (int i = 0; i < lines.Length; i++)
             {
                 int pos = lines[i].IndexOf(':');
@@ -46,6 +46,11 @@ namespace UnaRisc
                     // Remove the label from the line
                     lines[i] = lines[i].Substring(pos + 1);
                 }
+
+                // Remove the comments
+                pos = lines[i].IndexOf("//");
+                if (pos != -1)
+                    lines[i] = lines[i].Substring(0, pos);
             }
 
             // Run the code

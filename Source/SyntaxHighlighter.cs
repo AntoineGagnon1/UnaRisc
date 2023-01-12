@@ -11,6 +11,7 @@ namespace UnaRisc
     {
         private static readonly Color InstructionColor = Color.FromArgb(0x1da314);
         private static readonly Color LabelColor = Color.FromArgb(0x1da0b8);
+        private static readonly Color CommentsColor = Color.FromArgb(0x056316);
 
         public static void HighlightSyntax(RichTextBox textbox)
         {
@@ -58,6 +59,15 @@ namespace UnaRisc
                         textbox.SelectionLength = label.Length;
                         textbox.SelectionColor = LabelColor;
                     }
+                }
+
+                // Check for comments
+                var commentStart = line.IndexOf("//");
+                if(commentStart != -1)
+                {
+                    textbox.SelectionStart = startPos + commentStart;
+                    textbox.SelectionLength = line.Length - commentStart;
+                    textbox.SelectionColor = CommentsColor;
                 }
 
                 startPos += line.Length + 1;
