@@ -21,8 +21,8 @@ namespace UnaRisc
 
 
         private int defaultValue = 0;
-        private TextBox unaryOut;
-        private TextBox decimalOut;
+        private readonly TextBox unaryOut;
+        private readonly TextBox decimalOut;
 
         public void Reset()
         {

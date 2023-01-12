@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Windows.Forms.Design.AxImporter;
 
 namespace UnaRisc
 {
     public class Interpreter
     {
-        public readonly record struct ExecutionResult(string message, bool isError, int line);
+        public readonly record struct ExecutionResult(string Message, bool IsError, int Line);
 
         private readonly Register[] registers;
-        private Dictionary<string, int> labels = new();
+        private readonly Dictionary<string, int> labels = new();
 
         private int stackPos;
 
@@ -35,7 +34,7 @@ namespace UnaRisc
             string[] lines = code.Split(new[] { '\r', '\n' });
 
             // Parse the labels
-            for (int i = 0; i < lines.Count(); i++)
+            for (int i = 0; i < lines.Length; i++)
             {
                 int pos = lines[i].IndexOf(':');
                 if (pos != -1)
@@ -52,7 +51,7 @@ namespace UnaRisc
             // Run the code
             while (true)
             {
-                if (stackPos >= lines.Count())
+                if (stackPos >= lines.Length)
                     return new("Ran out of code to run ! (Forgot a ret ?)", true, stackPos - 1);
 
                 var line = lines[stackPos].Trim();
@@ -70,8 +69,8 @@ namespace UnaRisc
                 var arguments = line.Substring(keywords[0].Length).Replace(" ", "").Split(',');
                 var result = Instructions.InstructionNames[keywords[0]].Invoke(arguments, this);
 
-                if (result.message != null)
-                    return new (result.message, result.isError, stackPos - 1);
+                if (result.Message != null)
+                    return new (result.Message, result.IsError, stackPos - 1);
             }
         }
 
@@ -79,11 +78,11 @@ namespace UnaRisc
 
         public bool TryGetRegister(string? argument, out Register register)
         {
-            register = null;
+            register = registers.First();
             if (argument == null || argument.Length == 0 || argument[0] != 'r')
                 return false;
 
-            if (int.TryParse(argument.Substring(1), out int val))
+            if (int.TryParse(argument.AsSpan(1), out int val))
             {
                 if (val <= 0 || val > 5)
                     return false;

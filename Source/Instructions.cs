@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace UnaRisc
 {
     // if message != null the program will halt
-    public readonly record struct InstructionResult(string? message, bool isError);
+    public readonly record struct InstructionResult(string? Message, bool IsError);
 
     public static class Instructions
     {
-        public static Dictionary<string, Func<string[], Interpreter, InstructionResult>> InstructionNames = new()
+        public static readonly Dictionary<string, Func<string[], Interpreter, InstructionResult>> InstructionNames = new()
         { { "push", Push }, { "pop", Pop }, { "concat", Concat }, { "ret", Ret }, { "goto", Goto }, { "empty", Empty}};
 
         private static InstructionResult Push(string[] param, Interpreter interpreter)
