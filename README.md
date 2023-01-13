@@ -1,5 +1,5 @@
 # UnaRisc
-An interpreter for the [UNARISC language](https://info.usherbrooke.ca/mblondin/cours/ift209_h23/devoirs/devoir1.pdf)
+An interpreter for the [UNARISC language](https://info.usherbrooke.ca/mblondin/cours/ift209_h23/devoirs/devoir1.pdf#page=2)
 
 
 ![Screen capture](UnaRisc.png)
