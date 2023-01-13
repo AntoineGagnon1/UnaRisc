@@ -1,2 +1,2 @@
 # UnaRisc
-![Screen capture](unarisc.png)
+![Screen capture](UnaRisc.png)
