@@ -66,7 +66,6 @@
             this.TextInput.Size = new System.Drawing.Size(669, 519);
             this.TextInput.TabIndex = 0;
             this.TextInput.Text = "";
-            this.TextInput.TextChanged += new System.EventHandler(this.TextInput_TextChanged);
             // 
             // registersGroup
             // 

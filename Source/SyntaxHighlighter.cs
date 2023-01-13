@@ -4,21 +4,65 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static System.Windows.Forms.LinkLabel;
 
 namespace UnaRisc
 {
-    public static class SyntaxHighlighter
+    public class SyntaxHighlighter
     {
         private static readonly Color InstructionColor = Color.FromArgb(0x1da314);
         private static readonly Color LabelColor = Color.FromArgb(0x1da0b8);
         private static readonly Color CommentsColor = Color.FromArgb(0x056316);
 
-        public static void HighlightSyntax(RichTextBox textbox)
+        private RichTextBox textbox;
+
+        public SyntaxHighlighter(RichTextBox _textbox)
+        {
+            textbox = _textbox;
+
+            textbox.TextChanged += (_, _) => { HighlightSyntax(); };
+        }
+
+        // Set the back color of a line
+        public void ChangeLineColor(int lineIndex, Color color)
+        {
+            var lines = textbox.Text.Split(new[] { '\r', '\n' });
+            var line = Math.Min(lineIndex, lines.Length);
+
+            int start = 0;
+            for (int i = 0; i < line; i++)
+                start += lines[i].Length + 1; // + 1 for \n
+
+            var selectionStart = textbox.SelectionStart;
+
+            textbox.SelectionStart = start;
+            textbox.SelectionLength = lines[Math.Min(line, lines.Length - 1)].Length;
+            textbox.SelectionBackColor = color;
+
+            textbox.SelectionStart = selectionStart;
+            textbox.SelectionLength = 0;
+        }
+
+        public void ClearBackColors()
+        {
+            var selectionStart = textbox.SelectionStart;
+
+            textbox.SelectionStart = 0;
+            textbox.SelectionLength = textbox.Text.Length;
+            textbox.SelectionBackColor = Color.White;
+
+            textbox.SelectionLength = 0;
+            textbox.SelectionStart = selectionStart;
+
+            // Revert the text colors
+            HighlightSyntax();
+        }
+
+        public void HighlightSyntax()
         {
             textbox.SuspendLayout();
 
             var selectionStart = textbox.SelectionStart;
-            var selectionLength = textbox.SelectionLength;
             textbox.SelectionColor = Color.Black;
 
             string[] lines = textbox.Text.Split(new[] { '\r', '\n' });
@@ -74,7 +118,7 @@ namespace UnaRisc
             }
 
             textbox.SelectionStart = selectionStart;
-            textbox.SelectionLength = selectionLength;
+            textbox.SelectionLength = 0;
             textbox.SelectionColor = Color.Black;
             textbox.ResumeLayout();
         }

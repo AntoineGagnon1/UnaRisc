@@ -1,6 +1,7 @@
 using System.Windows.Forms;
 using System;
 using System.Text;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace UnaRisc
 {
@@ -8,6 +9,7 @@ namespace UnaRisc
     {
         private readonly Register[] registers;
         private readonly Interpreter interpreter;
+        private readonly SyntaxHighlighter syntaxHighlighter;
 
         public IDE()
         {
@@ -22,22 +24,24 @@ namespace UnaRisc
             };
 
             interpreter = new Interpreter(registers);
+            syntaxHighlighter = new SyntaxHighlighter(TextInput);
 
             TextInput.SelectionTabs = new int[] { 10, 20, 30, 40 };
 
             // Try to load from the last file
             string lastFilePath = Properties.Settings.Default.LastFileOpen;
             if(File.Exists(lastFilePath))
-            {
                 TextInput.Text = File.ReadAllText(lastFilePath);
-            }
         }
 
         private void runCodeButton_Click(object sender, EventArgs e)
         {
             resultBox.Text = "";
-            RemoveBackColors();
-            DisplayResult(interpreter.ExecuteCode(TextInput.Text));
+            syntaxHighlighter.ClearBackColors();
+
+            var result = interpreter.ExecuteCode(TextInput.Text);
+            resultBox.Text = result.Message;
+            syntaxHighlighter.ChangeLineColor(result.Line, result.IsError ? Color.Red : Color.DarkGreen);
         }
 
         private void resetButton_Click(object sender, EventArgs e)
@@ -45,44 +49,7 @@ namespace UnaRisc
             foreach (var reg in registers)
                 reg.Reset();
 
-            RemoveBackColors();
-        }
-
-        private void DisplayResult(Interpreter.ExecutionResult result)
-        {
-            resultBox.Text = result.Message;
-
-            // Get the position of the line
-            var lines = TextInput.Text.Split(new[] { '\r', '\n' });
-            var line = Math.Min(result.Line, lines.Length);
-
-            int start = 0;
-            for(int i = 0; i < line; i++)
-                start += lines[i].Length + 1; // + 1 for \n
-
-            var selectionStart = TextInput.SelectionStart;
-            var selectionLength = TextInput.SelectionLength;
-
-            TextInput.SelectionStart = start;
-            TextInput.SelectionLength = lines[Math.Min(line, lines.Length - 1)].Length;
-            TextInput.SelectionBackColor = result.IsError ? Color.Red : Color.DarkGreen;
-
-            TextInput.SelectionStart = selectionStart;
-            TextInput.SelectionLength = selectionLength;
-        }
-
-        // Remove all colors in the code input
-        private void RemoveBackColors()
-        {
-            TextInput.SelectionStart = 0;
-            TextInput.SelectionLength = TextInput.Text.Length;
-            TextInput.SelectionBackColor = Color.White;
-        }
-
-        private void TextInput_TextChanged(object sender, EventArgs e)
-        {
-            int line = TextInput.Text.Substring(0, TextInput.TextLength).Count(c => c == '\n' || c == '\r');
-            SyntaxHighlighter.HighlightSyntax(TextInput);
+            syntaxHighlighter.ClearBackColors();
         }
 
         private void saveButton_Click(object sender, EventArgs e)
