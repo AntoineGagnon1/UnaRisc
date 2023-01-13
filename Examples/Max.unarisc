@@ -1,0 +1,12 @@
+// max(r1,r2)
+concat r3, r1 // Save r1 and r2 for later
+concat r4, r2
+
+loop:
+	empty r1, end1 // Check if r1 or r2 is empty
+	empty r2, end2
+	pop r1 // Decrement r1 and r2
+	pop r2
+	goto loop
+end1: ret r4 // r1 is empty, so r2 was bigger
+end2: ret r3 // r2 is empty, so r1 was bigger

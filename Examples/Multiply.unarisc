@@ -1,0 +1,12 @@
+// r1 * r2
+concat r3, r1 // Save the value of r1
+pop r2 // pre decrement r2 by one, because the check is r2 == 0 not r2 == 1
+
+loop:
+	empty r2, end
+	pop r2
+	concat r1, r3 // add the value of r3 (initial r1) to r1
+	goto loop
+
+end:
+	ret r1
