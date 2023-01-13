@@ -1,13 +1,14 @@
 using System.Windows.Forms;
 using System;
 using System.Text;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using UnaRisc.Source.UI;
+using Microsoft.Win32;
 
 namespace UnaRisc
 {
     public partial class IDE : Form
     {
-        private readonly Register[] registers;
+        private readonly List<RegisterUI> registers = new();
         private readonly Interpreter interpreter;
         private readonly SyntaxHighlighter syntaxHighlighter;
 
@@ -15,15 +16,15 @@ namespace UnaRisc
         {
             InitializeComponent();
 
-            registers = new []{ 
-                new Register(r1Input, r1Decimal),
-                new Register(r2Input, r2Decimal),
-                new Register(r3Input, r3Decimal),
-                new Register(r4Input, r4Decimal),
-                new Register(r5Input, r5Decimal),
-            };
+            interpreter = new Interpreter(5);
 
-            interpreter = new Interpreter(registers);
+            for(int i = 0; i < 5; i++)
+            {
+                var register = new RegisterUI(interpreter.GetRegister(i), i + 1);
+                registers.Add(register);
+                registersFlow.Controls.Add(register);
+            }
+
             syntaxHighlighter = new SyntaxHighlighter(TextInput);
 
             TextInput.SelectionTabs = new int[] { 10, 20, 30, 40 };
@@ -38,6 +39,9 @@ namespace UnaRisc
         {
             resultBox.Text = "";
             syntaxHighlighter.ClearBackColors();
+
+            foreach (var rui in registers)
+                rui.Reset();
 
             var result = interpreter.ExecuteCode(TextInput.Text);
             resultBox.Text = result.Message;

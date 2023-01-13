@@ -10,24 +10,24 @@ namespace UnaRisc
     {
         public readonly record struct ExecutionResult(string Message, bool IsError, int Line);
 
-        private readonly Register[] registers;
+        private readonly List<Register> registers = new();
         private readonly Dictionary<string, int> labels = new();
 
         private int stackPos;
 
-        public Interpreter(Register[] _registers)
+        public Interpreter(int registerCount)
         {
-            registers = _registers;
+            for (int i = 0; i < registerCount; i++)
+                registers.Add(new Register());
             stackPos = 0;
         }
+
+        public Register GetRegister(int index) => registers[index];
 
         public ExecutionResult ExecuteCode(string code)
         {
             // Reset
             stackPos = 0;
-
-            foreach (var reg in registers)
-                reg.Reset();
 
             labels.Clear();
 
@@ -89,7 +89,7 @@ namespace UnaRisc
 
             if (int.TryParse(argument.AsSpan(1), out int val))
             {
-                if (val <= 0 || val > 5)
+                if (val <= 0 || val > registers.Count)
                     return false;
 
                 register = registers[val - 1];
